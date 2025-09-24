@@ -1,0 +1,52 @@
+x-logging: &json-logging
+  options:
+    max-size: "10m"
+    max-file: "2"
+  driver: "json-file"
+
+x-phpenv_defaults: &phpenv_defaults
+  - PHP_XDEBUG=${XDEBUG_ENABLE}
+
+services:
+  extapachedev:
+    build: ./httpd
+    image: apache:dev
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - extphp${PHPVERSION}dev
+    volumes:
+      - datauserdev:/home/synbshop
+    container_name: extapachedev
+    hostname: ${USERNAME}-apachedev
+    environment:
+      - PHPVERSION=${PHPVERSION}
+      - USERNAME=${USERNAME}
+    logging: *json-logging
+    healthcheck:
+      test: curl --fail http://localhost || exit 1
+      interval: 30s
+      retries: 5
+      start_period: 10s
+      timeout: 10s
+
+  extphp83dev:
+    build: ./php/8.3
+    image: php:8.3-dev
+    volumes:
+      - datauserdev:/home/synbshop
+    container_name: extphp83dev
+    hostname: ${USERNAME}-php83dev
+    environment: *phpenv_defaults
+    logging: *json-logging
+
+volumes:
+  datauserdev:
+
+networks:
+  default:
+    name: ext_configsdocker_default
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24

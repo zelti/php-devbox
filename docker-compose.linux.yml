@@ -1,0 +1,8 @@
+services:
+  extapachedev:
+    volumes:
+      - /home/devuser/public_html:/home/devuser/public_html
+
+  extphp83dev:
+    volumes:
+      - /home/devuser/public_html:/home/devuser/public_html

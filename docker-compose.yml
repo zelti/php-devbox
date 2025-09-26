@@ -18,9 +18,9 @@ services:
     volumes:
       - nginx-ssl:/etc/nginx/ssl
 
-  nginx:
+  nginxdev:
     build: ./docker-library/nginx
-    image: nginx:dev
+    image: local/nginx:dev
     container_name: nginx-dev
     hostname: ${USERNAME}-nginx
     ports:
@@ -34,7 +34,7 @@ services:
       - PHP_VERSION=${PHP_VERSION}
     depends_on:
       - mkcert
-      - php${PHPVERSION}dev
+      - php${PHP_VERSION}dev
     logging: *json-logging
     healthcheck:
       test: curl --fail http://localhost || exit 1
@@ -45,7 +45,7 @@ services:
 
   php83dev:
     build: ./docker-library/php/8.3
-    image: php:8.3-dev
+    image: local/php:8.3-dev
     volumes:
       - datauserdev:/home/devuser
     container_name: php83dev
@@ -55,7 +55,7 @@ services:
   
   php84dev:
     build: ./docker-library/php/8.4
-    image: php:8.4-dev
+    image: local/php:8.4-dev
     volumes:
       - datauserdev:/home/devuser
     container_name: php84dev

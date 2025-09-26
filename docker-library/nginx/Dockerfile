@@ -1,11 +1,12 @@
 FROM nginx:stable
 
-# Create devuser with UID/GID 33
-RUN adduser --uid 33 --ingroup www-data --home /home/devuser --shell /bin/bash --disabled-password --gecos "dev user" devuser \
-    && mkdir -p /home/devuser/public_html \
-    && chown -R devuser:www-data /home/devuser/public_html \
-    && chmod -R 775 /home/devuser/public_html
+# Crear usuario de desarrollo devuser
+RUN useradd -m -d /home/devuser -s /bin/bash devuser \
+    && sed -i -e "s/umask 022/umask 002/g" /home/devuser/.bashrc
 
+# Ajustar permisos de Apache para devuser
+RUN chown -R devuser:www-data /home/devuser \
+    && chmod -R 775 /home/devuser
 
 # Copia la plantilla
 COPY config_files/site.conf.tpl /etc/nginx/templates/site.conf.tpl

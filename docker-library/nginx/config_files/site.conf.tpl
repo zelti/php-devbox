@@ -1,5 +1,5 @@
 # ======================
-# Nginx configuration (Docker-friendly)
+# Nginx configuration
 # ======================
 # This configuration uses environment variables from Docker (.env file):
 #   - $DEV_DOMAIN   : sets the base development domain (e.g., dev.local)
@@ -8,30 +8,30 @@
 #   envsubst '$DEV_DOMAIN $PHP_VERSION' < site.conf.tpl > /etc/nginx/conf.d/site.conf
 # ==============================================================================
 
+
+# Map to decide PHP backend based on hostname
+map $host $php_backend {
+    "~--p83\.${DEV_DOMAIN}$" "php83dev";
+    "~--p84\.${DEV_DOMAIN}$" "php84dev";
+    default "php${PHP_VERSION}";
+}
+# Resolve dynamic subdirectories
+map $host $docroot {
+    "~^(?<path>.+)--p[0-9]{2}\.${DEV_DOMAIN}$" "/home/devuser/public_html/${path//--//}";
+    "~^(?<path>.+)\.${DEV_DOMAIN}$" "/home/devuser/public_html/${path//--//}";
+}
+map $subdomains $dotroot {
+    default "/home/devuser/public_html";
+    "~^(?<parts>.+)$" "/home/devuser/public_html/${parts//./\/}";
+}
+
+
 # ======================
 # HTTP - port 80
 # ======================
 server {
     listen 80;
     server_name ~^(?<subdomains>.+)\.${DEV_DOMAIN}$;
-
-    # Map to decide PHP backend based on hostname
-    map $host $php_backend {
-        "~--p83\.${DEV_DOMAIN}$" "php83dev";
-        "~--p84\.${DEV_DOMAIN}$" "php84dev";
-        default "php${PHP_VERSION}";
-    }
-
-    # Resolve dynamic subdirectories
-    map $host $docroot {
-        "~^(?<path>.+)--p[0-9]{2}\.${DEV_DOMAIN}$" "/home/devuser/public_html/${path//--//}";
-        "~^(?<path>.+)\.${DEV_DOMAIN}$" "/home/devuser/public_html/${path//--//}";
-    }
-
-    map $subdomains $dotroot {
-        default "/home/devuser/public_html";
-        "~^(?<parts>.+)$" "/home/devuser/public_html/${parts//./\/}";
-    }
 
     root $docroot;
     index index.php index.html;
@@ -72,24 +72,6 @@ server {
 
     ssl_certificate     /etc/nginx/ssl/php-devbox.pem;  # certificate
     ssl_certificate_key /etc/nginx/ssl/php-devbox.key;  # private key
-
-    # Map to decide PHP backend based on hostname
-    map $host $php_backend {
-        "~--p83\.${DEV_DOMAIN}$" "php83dev";
-        "~--p84\.${DEV_DOMAIN}$" "php84dev";
-        default "php${PHP_VERSION}";
-    }
-
-    # Resolve dynamic subdirectories
-    map $host $docroot {
-        "~^(?<path>.+)--p[0-9]{2}\.${DEV_DOMAIN}$" "/home/devuser/public_html/${path//--//}";
-        "~^(?<path>.+)\.${DEV_DOMAIN}$" "/home/devuser/public_html/${path//--//}";
-    }
-
-    map $subdomains $dotroot {
-        default "/home/devuser/public_html";
-        "~^(?<parts>.+)$" "/home/devuser/public_html/${parts//./\/}";
-    }
 
     root $docroot;
     index index.php index.html;

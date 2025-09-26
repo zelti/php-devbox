@@ -1,7 +1,6 @@
 #!/bin/bash -
 set -e
 
-PHP_FOLDER=php/$PHP_VERSION
 HOMEDIR="/home/devuser"
 BASHRC_DEVUSER="/usr/local/devuser/bashrc"
 
@@ -43,7 +42,7 @@ fi
 # create public_html folder if not present
 if [ ! -d "$HOMEDIR/public_html" ]; then
   mkdir -p "$HOMEDIR/public_html"
-  chown devuser:www-data $HOMEDIR/public_html
+  sudo chown -R www-data:www-data $HOMEDIR
 fi
 
 sudo rm /run/cron* -f

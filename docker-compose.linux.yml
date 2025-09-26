@@ -1,8 +1,12 @@
 services:
-  extapachedev:
+  nginxdev:
     volumes:
       - /home/devuser/public_html:/home/devuser/public_html
 
-  extphp83dev:
+  php83dev:
+    volumes:
+      - /home/devuser/public_html:/home/devuser/public_html
+  
+  php84dev:
     volumes:
       - /home/devuser/public_html:/home/devuser/public_html

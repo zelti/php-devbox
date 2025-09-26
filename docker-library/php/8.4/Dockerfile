@@ -1,7 +1,7 @@
-FROM php:8.3-fpm
+FROM php:8.4-fpm
 LABEL maintainer="Yostin Vargas"
 
-ARG PHP_VERSION=8.3
+ARG PHP_VERSION=8.4
 ARG NVM_DIR=/usr/local/nvm
 ARG NODE_VERSION=19
 ARG PHP_XDEBUG=no
@@ -84,17 +84,16 @@ RUN . /etc/profile.d/nvm.sh \
 RUN echo "let skip_defaults_vim = 1" >> /etc/vim/vimrc 
 
 # Configuración PHP personalizada
-COPY zz-docker.conf "/usr/local/etc/php-fpm.d/zz-docker.conf"
-COPY bashrc "/usr/local/devuser/bashrc"
-COPY docker-php-entrypoint "/usr/local/bin/docker-php-entrypoint"
-COPY xdebug "/usr/local/bin/xdebug"
+COPY config_files/zz-docker.conf "/usr/local/etc/php-fpm.d/zz-docker.conf"
+COPY config_files/bashrc "/usr/local/devuser/bashrc"
+COPY config_files/docker-php-entrypoint "/usr/local/bin/docker-php-entrypoint"
+COPY config_files/xdebug "/usr/local/bin/xdebug"
 
 RUN chmod +x /usr/local/bin/xdebug \ 
     && chmod +x /usr/local/bin/docker-php-entrypoint \
     && mkdir -p /usr/local/etc/php/mods-available
 
-COPY docker-php-ext-xdebug.ini "/usr/local/etc/php/mods-available/docker-php-ext-xdebug.ini"
+COPY config_files/docker-php-ext-xdebug.ini "/usr/local/etc/php/mods-available/docker-php-ext-xdebug.ini"
 
 USER devuser
 WORKDIR /home/devuser
-EXPOSE 9001

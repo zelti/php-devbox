@@ -39,10 +39,15 @@ then
     crontab -u www-data $HOMEDIR/script/cron_devuser
 fi
 
+if [ ! -d "/run/php/" ]; then
+  sudo mkdir -p "/run/php"
+  sudo chown devuser:www-data "/run/php"
+fi
+
 # create public_html folder if not present
 if [ ! -d "$HOMEDIR/public_html" ]; then
   mkdir -p "$HOMEDIR/public_html"
-  sudo chown -R www-data:www-data $HOMEDIR
+  sudo chown -R devuser:www-data $HOMEDIR
 fi
 
 sudo rm /run/cron* -f

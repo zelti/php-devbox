@@ -27,7 +27,8 @@ COPY config_files/site.conf.tpl /etc/nginx/conf.d/site.conf.tpl
 COPY config_files/common_server_config.conf.tpl /etc/nginx/conf.d/common_server_config.conf.tpl
 # El script Lua
 COPY config_files/resolve_docroot.lua /etc/nginx/lua/resolve_docroot.lua 
-
+#other config
+COPY config_files/config.main /etc/nginx/conf.d/config.main
 # 3. Crear carpeta de certificados
 RUN mkdir -p /etc/nginx/ssl/
 

@@ -8,33 +8,22 @@ x-phpenv_defaults: &phpenv_defaults
   - PHP_XDEBUG=${XDEBUG_ENABLE}
 
 services:
-  mkcert:
-    build: ./docker-library/mkcert
-    image: local/mkcert-generator:latest
-    container_name: mkcert-generator
-    environment:
-      DOMAIN: ${DEV_DOMAIN}   # <- Cambia por el dominio que necesites
-      # KEEP_ALIVE: "true" # <- opcional: si quieres que el contenedor se quede corriendo, descomenta
-    volumes:
-      - nginx-ssl:/etc/nginx/ssl
-
-  nginxdev:
-    build: ./docker-library/nginx
-    image: local/nginx:dev
-    container_name: nginx-dev
-    hostname: ${USERNAME}-nginx
+  apachedev:
+    build: ./docker-library/httpd
+    image: phpdevbox/apache:dev
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - nginx-ssl:/etc/nginx/ssl/:ro
-      - datauserdev:/home/devuser:ro
-    environment:
-      - DEV_DOMAIN=${DEV_DOMAIN}
-      - PHP_VERSION=${PHP_VERSION}
+      - 80:80
+      - 443:443
     depends_on:
-      - mkcert
       - php${PHP_VERSION}dev
+    volumes:
+      - datauserdev:/home/devuser:ro
+      - ./certificates:/etc/apache2/ssl/:ro
+    container_name: apachedev
+    hostname: ${USERNAME}-apachedev
+    environment:
+      - PHP_VERSION=${PHP_VERSION}
+      - DEV_DOMAIN=${DEV_DOMAIN}
     logging: *json-logging
     healthcheck:
       test: curl --fail http://localhost || exit 1
@@ -43,9 +32,33 @@ services:
       start_period: 10s
       timeout: 10s
 
+  # nginxdev:
+  #   build: ./docker-library/nginx
+  #   image: local/nginx:dev
+  #   container_name: nginx-dev
+  #   hostname: ${USERNAME}-nginx
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./certificates:/etc/nginx/ssl/:ro
+  #     - datauserdev:/home/devuser:ro
+  #   environment:
+  #     - DEV_DOMAIN=${DEV_DOMAIN}
+  #     - PHP_VERSION=${PHP_VERSION}
+  #   depends_on:
+  #     - php${PHP_VERSION}dev
+  #   logging: *json-logging
+  #   healthcheck:
+  #     test: curl --fail http://localhost || exit 1
+  #     interval: 30s
+  #     retries: 5
+  #     start_period: 10s
+  #     timeout: 10s
+
   php83dev:
     build: ./docker-library/php/8.3
-    image: local/php:8.3-dev
+    image: phpdevbox/php:8.3-dev
     volumes:
       - datauserdev:/home/devuser
     container_name: php83dev
@@ -55,7 +68,7 @@ services:
   
   php84dev:
     build: ./docker-library/php/8.4
-    image: local/php:8.4-dev
+    image: phpdevbox/php:8.4-dev
     volumes:
       - datauserdev:/home/devuser
     container_name: php84dev
@@ -65,7 +78,6 @@ services:
 
 volumes:
   datauserdev:
-  nginx-ssl:
 
 networks:
   default:

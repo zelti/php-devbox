@@ -1,5 +1,5 @@
-set $DEV_DOMAIN "${DEV_DOMAIN}"; 
-set $PHP_VERSION "${PHP_VERSION}"; 
+set $dev_domain "${DEV_DOMAIN}"; 
+set $php_version "${PHP_VERSION}"; 
 
 # Inicializa y llama al script Lua
 set $docroot "UNDEFINED"; 
@@ -27,9 +27,29 @@ location ~ \.php$ {
 }
 
 # Websockets
-location /ws/ {
-    proxy_pass http://phpwebsocket:8080;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-}
+location /ws {
+        # redirect all traffic to localhost:8080;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-NginX-Proxy true;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_pass php_backend:8080/$is_args$args;
+        proxy_redirect off;
+        proxy_read_timeout 86400;
+
+        # enables WS support
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+
+        # prevents 502 bad gateway error
+        proxy_buffers 8 32k;
+        proxy_buffer_size 64k;
+
+        reset_timedout_connection on;
+
+        #error_log /var/log/nginx/wss_error.log;
+        #access_log /var/log/nginx/wss_access.log;
+    }

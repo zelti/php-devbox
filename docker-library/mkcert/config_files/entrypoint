@@ -22,7 +22,7 @@ fi
 echo "[mkcert] Generating certificate for: $DOMAINS"
 
 # Si la versión de mkcert soporta las flags, las usamos (más limpias).
-if mkcert --help 2>&1 | grep -q -- '--cert-file'; then
+if mkcert --help 2>&1 | grep -q -- '-cert-file'; then
   mkcert -cert-file "${SSL_DIR}/${CERT_NAME}" -key-file "${SSL_DIR}/${KEY_NAME}" $DOMAINS
 else
   # Fallback para versiones antiguas: generar en un tmpdir y mover los archivos resultantes.

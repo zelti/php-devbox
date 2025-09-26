@@ -1,5 +1,5 @@
 services:
-  nginxdev:
+  apachedev:
     volumes:
       - /home/devuser/public_html:/home/devuser/public_html
 

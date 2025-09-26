@@ -2,13 +2,13 @@
 -- Script Lua para determinar el docroot dinámico, manejando subdominios con '-' y '.'
 
 -- Obtiene la variable del host de Nginx
-local host = ngx.var.host
+local host = r.headers_in["Host"]
 
 -- Variable default para el docroot
 local docroot = "/home/devuser/public_html"
 
 -- Obtenemos el dominio base desde la variable de entorno
-local dev_domain = ngx.var.dev_domain
+local dev_domain = r:get_env("DEV_DOMAIN")
 
 if host and dev_domain and dev_domain ~= "" then
     -- 1. Intentar eliminar el sufijo de versión de PHP si está presente: "--pXX.phpbox.dev"
@@ -37,6 +37,4 @@ if host and dev_domain and dev_domain ~= "" then
 end
 
 -- Asigna el valor calculado a la variable de Nginx ($docroot)
-ngx.var.docroot = docroot
-
--- ngx.log(ngx.INFO, "Host: " .. (host or "N/A") .. " -> Docroot: " .. docroot)
+r:set_var("docroot_path", docroot)

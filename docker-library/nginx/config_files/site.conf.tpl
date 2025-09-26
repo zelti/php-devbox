@@ -8,6 +8,16 @@
 #   envsubst '$DEV_DOMAIN $PHP_VERSION' < site.conf.tpl > /etc/nginx/conf.d/site.conf
 # ==============================================================================
 
+gzip on;
+gzip_buffers 16 8k;
+gzip_comp_level 5;
+gzip_disable "msie6";
+gzip_min_length 1000;
+gzip_http_version 1.0;
+gzip_proxied any;
+gzip_types text/plain application/javascript application/x-javascript text/javascript text/xml text/css image/svg+xml;
+gzip_vary on;
+
 
 # Map to decide PHP backend based on hostname
 map $host $php_backend {

@@ -1,0 +1,57 @@
+#!/bin/sh
+set -eu
+
+# Variables configurables
+: "${DOMAIN:?Environment variable DOMAIN is required (e.g. DOMAIN=php-devbox.test)}"
+SSL_DIR="/etc/nginx/ssl"
+CERT_NAME="php-devbox.pem"
+KEY_NAME="php-devbox.key"
+
+# Acepta dominio(s) separados por coma o espacio
+DOMAINS=$(echo "$DOMAIN" | tr ',' ' ')
+
+mkdir -p "$SSL_DIR"
+chmod 755 "$SSL_DIR" || true
+
+echo "[mkcert] Installing local CA (mkcert -install)..."
+# mkcert -install es idempotente; puede fallar en entornos raros, seguimos de todas formas
+if ! mkcert -install >/dev/null 2>&1; then
+  echo "[mkcert] Warning: mkcert -install returned non-zero exit code, continuing..."
+fi
+
+echo "[mkcert] Generating certificate for: $DOMAINS"
+
+# Si la versión de mkcert soporta las flags, las usamos (más limpias).
+if mkcert --help 2>&1 | grep -q -- '--cert-file'; then
+  mkcert -cert-file "${SSL_DIR}/${CERT_NAME}" -key-file "${SSL_DIR}/${KEY_NAME}" $DOMAINS
+else
+  # Fallback para versiones antiguas: generar en un tmpdir y mover los archivos resultantes.
+  TMPDIR=$(mktemp -d)
+  echo "[mkcert] Older mkcert detected. Generating in temp dir $TMPDIR"
+  (cd "$TMPDIR" && mkcert $DOMAINS)
+  CERT_SRC=$(ls "$TMPDIR"/*.pem 2>/dev/null | head -n1 || true)
+  KEY_SRC=$(ls "$TMPDIR"/*-key.pem 2>/dev/null | head -n1 || true)
+  if [ -z "$CERT_SRC" ] || [ -z "$KEY_SRC" ]; then
+    echo "[mkcert] Failed to find generated files in $TMPDIR"
+    rm -rf "$TMPDIR"
+    exit 1
+  fi
+  mv "$CERT_SRC" "${SSL_DIR}/${CERT_NAME}"
+  mv "$KEY_SRC" "${SSL_DIR}/${KEY_NAME}"
+  rm -rf "$TMPDIR"
+fi
+
+# Permisos razonables
+chmod 644 "${SSL_DIR}/${CERT_NAME}" || true
+chmod 600 "${SSL_DIR}/${KEY_NAME}" || true
+
+echo "[mkcert] Wrote ${SSL_DIR}/${CERT_NAME} and ${SSL_DIR}/${KEY_NAME}"
+
+# Opción para mantener el contenedor vivo (útil si necesitas que el servicio siga montando el volumen)
+if [ "${KEEP_ALIVE:-false}" = "true" ]; then
+  echo "[mkcert] KEEP_ALIVE=true - keeping container alive"
+  tail -f /dev/null
+fi
+
+# Si no KEEP_ALIVE, el contenedor termina (comportamiento tipo one-shot)
+exit 0

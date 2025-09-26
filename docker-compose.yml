@@ -8,21 +8,33 @@ x-phpenv_defaults: &phpenv_defaults
   - PHP_XDEBUG=${XDEBUG_ENABLE}
 
 services:
-  extapachedev:
-    build: ./httpd
-    image: apache:dev
-    ports:
-      - 80:80
-      - 443:443
-    depends_on:
-      - extphp${PHPVERSION}dev
-    volumes:
-      - datauserdev:/home/synbshop
-    container_name: extapachedev
-    hostname: ${USERNAME}-apachedev
+  mkcert:
+    build: ./docker-library/mkcert
+    image: local/mkcert-generator:latest
+    container_name: mkcert-generator
     environment:
-      - PHPVERSION=${PHPVERSION}
-      - USERNAME=${USERNAME}
+      DOMAIN: ${DEV_DOMAIN}   # <- Cambia por el dominio que necesites
+      # KEEP_ALIVE: "true" # <- opcional: si quieres que el contenedor se quede corriendo, descomenta
+    volumes:
+      - nginx-ssl:/etc/nginx/ssl
+
+  nginx:
+    build: ./docker-library/nginx
+    image: nginx:dev
+    container_name: nginx-dev
+    hostname: ${USERNAME}-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - nginx-ssl:/etc/nginx/ssl/:ro
+      - datauserdev:/home/devuser:ro
+    environment:
+      - DEV_DOMAIN=${DEV_DOMAIN}
+      - PHP_VERSION=${PHP_VERSION}
+    depends_on:
+      - mkcert
+      - php${PHPVERSION}dev
     logging: *json-logging
     healthcheck:
       test: curl --fail http://localhost || exit 1
@@ -31,23 +43,33 @@ services:
       start_period: 10s
       timeout: 10s
 
-  
-  extphp83dev:
-    build: ./php/8.3
+  php83dev:
+    build: ./docker-library/php/8.3
     image: php:8.3-dev
     volumes:
-      - datauserdev:/home/synbshop
-    container_name: extphp83dev
+      - datauserdev:/home/devuser
+    container_name: php83dev
     hostname: ${USERNAME}-php83dev
+    environment: *phpenv_defaults
+    logging: *json-logging
+  
+  php84dev:
+    build: ./docker-library/php/8.4
+    image: php:8.4-dev
+    volumes:
+      - datauserdev:/home/devuser
+    container_name: php84dev
+    hostname: ${USERNAME}-php84dev
     environment: *phpenv_defaults
     logging: *json-logging
 
 volumes:
   datauserdev:
+  nginx-ssl:
 
 networks:
   default:
-    name: ext_configsdocker_default
+    name: phpdevbox_default
     ipam:
       config:
         - subnet: 172.20.0.0/24

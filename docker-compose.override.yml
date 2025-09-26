@@ -1,24 +1,23 @@
-version: "3.7"
 services:
-  extpostgres16dev:
+  postgres16dev:
     image: postgres:16
     shm_size: 1gb
     ports:
       - 127.0.0.1:5439:5432
-    container_name: extpostgres16dev
+    container_name: postgres16dev
     hostname: ${USERNAME}-postgres16dev
     volumes:
-      - extdatapostgres16dev:/var/lib/postgresql/data
+      - datapostgres16dev:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=${USER_DEV}
       - POSTGRES_PASSWORD=${PASSWD_DEV}
 
-  extes8143dev:
+  es8143dev:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.14.2
     volumes:
-      - extdataes8143dev:/usr/share/elasticsearch/data
+      - dataes8143dev:/usr/share/elasticsearch/data
 
-    container_name: extes8143dev
+    container_name: es8143dev
     hostname: ${USERNAME}-es8143dev
     environment:
       - bootstrap.memory_lock=true
@@ -39,14 +38,14 @@ services:
         limits:
           memory: 2048M
 
-  extkibana:
+  kibana:
     image: docker.elastic.co/kibana/kibana:8.14.2
     environment:
       SERVER_NAME: kibana.dev.local
-      ELASTICSEARCH_HOSTS: http://extes8143dev:9200
+      ELASTICSEARCH_HOSTS: http://es8143dev:9200
     ports:
       - 127.0.0.1:5601:5601
 
 volumes:
-  extdatapostgres16dev:
-  extdataes8143dev:
+  datapostgres16dev:
+  dataes8143dev:

@@ -11,42 +11,40 @@ ENV NVM_DIR=${NVM_DIR}
 ENV NODE_VERSION=${NODE_VERSION}
 ENV PHP_XDEBUG=${PHP_XDEBUG}
 
-# Instalar dependencias del sistema
+# Instalar dependencias del sistema and php
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libfreetype-dev \
-    libjpeg62-turbo-dev \
-    libpng-dev \
-    libicu-dev \
-    libzip-dev \
-    libpq-dev \
-    libxml2-dev \
-    libxslt1-dev \
-    libmagickwand-dev \
-    libonig-dev \
-    git sudo iproute2 openssh-client unzip rsync \
-    xfonts-encodings xfonts-utils fontconfig libxrender1 \
-    aspell aspell-en aspell-fr \
-    build-essential unixodbc-dev \
-    curl gnupg wget\
-    vim nano less \
-    cron apt-transport-https ca-certificates mailutils iputils-ping  \
-    && rm -rf /var/lib/apt/lists/*
-
-# Configuración e instalación de extensiones PHP
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+        libfreetype-dev \
+        libjpeg62-turbo-dev \
+        libpng-dev \
+        libicu-dev \
+        libzip-dev \
+        libpq-dev \
+        libxml2-dev \
+        libxslt1-dev \
+        libmagickwand-dev \
+        libonig-dev \
+        git sudo iproute2 openssh-client unzip rsync \
+        xfonts-encodings xfonts-utils fontconfig libxrender1 \
+        aspell aspell-en aspell-fr \
+        build-essential unixodbc-dev \
+        curl gnupg wget \
+        vim nano less \
+        cron apt-transport-https ca-certificates mailutils iputils-ping \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
-    gd \
-    intl \
-    zip \
-    pdo_mysql \
-    pdo_pgsql \
-    soap \
-    xsl \
-    bcmath \
-    opcache \
-    mbstring \
-    exif \
-    pcntl
+        gd \
+        intl \
+        zip \
+        pdo_mysql \
+        pdo_pgsql \
+        soap \
+        xsl \
+        bcmath \
+        opcache \
+        mbstring \
+        exif \
+        pcntl \
+    && rm -rf /var/lib/apt/lists/*
 
 # Extensiones PECL
 RUN pecl install imagick redis apcu xdebug \

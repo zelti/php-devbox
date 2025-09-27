@@ -8,6 +8,15 @@ x-phpenv_defaults: &phpenv_defaults
   - PHP_XDEBUG=${XDEBUG_ENABLE}
 
 services:
+  dnsmasq:
+    image: andyshinn/dnsmasq
+    ports:
+      - "53:53/udp"
+    command: --address=/phpbox.dev/127.0.0.1 --local=/phpbox.dev/
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+
   apachedev:
     build: ./docker-library/httpd
     image: phpdevbox/apache:dev
@@ -16,6 +25,7 @@ services:
       - 443:443
     depends_on:
       - php${PHP_VERSION}dev
+      - dnsmasq
     volumes:
       - datauserdev:/home/devuser:ro
       - ./certificates:/etc/apache2/ssl/:ro

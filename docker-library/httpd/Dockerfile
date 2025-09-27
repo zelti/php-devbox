@@ -21,7 +21,7 @@ RUN echo "APT::Install-Recommends false;" >> /etc/apt/apt.conf.d/00recommends \
 # Copiar configuraciones y scripts
 
 RUN mkdir -p /etc/apache2/lua \
-    && mkdir -p /etc/apache/ssl
+    && mkdir -p /etc/apache2/ssl
 
 COPY config_files/resolve_docroot.lua /etc/apache2/lua/resolve_docroot.lua
 #Sites

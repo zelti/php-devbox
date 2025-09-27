@@ -12,7 +12,7 @@ services:
     image: andyshinn/dnsmasq
     ports:
       - "53:53/udp"
-    command: --address=/phpbox.dev/127.0.0.1 --local=/phpbox.dev/
+    command: --address=/${DEV_DOMAIN}/127.0.0.1 --local=/${DEV_DOMAIN}/
     restart: unless-stopped
     cap_add:
       - NET_ADMIN

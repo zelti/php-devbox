@@ -34,15 +34,37 @@ function silly_mapper(r)
         -- Manejar la lógica de reemplazo
         local final_path = path_only
         
-        r:err(string.format("DEBUG LUA: Before replacement: %s", final_path))
+         r:err(string.format("DEBUG LUA: Before replacement: %s", final_path))
         
-        -- Reemplazar -- con /
-        final_path = final_path:gsub("%-%-", "/")
-        r:err(string.format("DEBUG LUA: After -- replacement: %s", final_path))
+        -- Determinar si usa -- o . como separador
+        local path_parts = {}
         
-        -- Reemplazar . con / (pero solo los puntos del subdominio, no del dominio)
-        final_path = final_path:gsub("%.", "/")
-        r:err(string.format("DEBUG LUA: After . replacement: %s", final_path))
+        if string.find(final_path, "%-%-") then
+            -- Usar separador --
+            r:err(string.format("DEBUG LUA: Using -- separator"))
+            for part in string.gmatch(final_path, "[^%-%-]+") do
+                table.insert(path_parts, part)
+            end
+        else
+            -- Usar separador . (punto)
+            r:err(string.format("DEBUG LUA: Using . separator"))
+            for part in string.gmatch(final_path, "[^%.]+") do
+                table.insert(path_parts, part)
+            end
+        end
+        
+        r:err(string.format("DEBUG LUA: Found %d parts: %s", #path_parts, table.concat(path_parts, ", ")))
+        
+        -- Invertir el orden de las partes
+        local reversed_parts = {}
+        for i = #path_parts, 1, -1 do
+            table.insert(reversed_parts, path_parts[i])
+        end
+        
+        -- Construir el path final invertido
+        final_path = table.concat(reversed_parts, "/")
+        
+        r:err(string.format("DEBUG LUA: After reversal: %s", final_path))
         
         -- Construir la ruta final
         docroot = docroot .. "/" .. final_path

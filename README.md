@@ -1,8 +1,14 @@
+<p align="center">
+  <img src="https://img.shields.io/badge/PHP-DevForge-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP DevForge">
+</p>
+
 # PHP DevForge
+
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE) [![GitHub last commit](https://img.shields.io/github/last-commit/zelti/php-devforge)]()
 
 A ready-to-use PHP development environment powered by Docker containers that provides automatic domain generation, local SSL certificates, and live code editing capabilities.
 
-## Description
+## 📖 Description
 
 PHP DevForge is a comprehensive Docker-based development environment designed to streamline PHP development. It features:
 
@@ -14,15 +20,15 @@ PHP DevForge is a comprehensive Docker-based development environment designed to
 
 The environment automatically generates URLs based on your project folder structure. For example, a project at `laravel/site/public/index.php` becomes accessible at `https://public--site--laravel.phpforge.dev`.
 
-## Installation
+## 🔧 Installation
 
-### Prerequisites
+### 📋 Prerequisites
 
 - Docker and Docker Compose
 - Git
 - Bash shell (Linux/macOS)
 
-### Setup Steps
+### 🚀 Setup Steps
 
 1. **Clone the repository:**
    ```bash
@@ -68,9 +74,9 @@ The environment automatically generates URLs based on your project folder struct
     ```
     (If you sourced the aliases, you can use `forge:start` instead)
 
-## Usage
+## 💻 Usage
 
-### Starting and Stopping
+### ▶️ Starting and Stopping
 
 ```bash
 # Start all services
@@ -104,7 +110,7 @@ forge:logs:php83
 forge:logs:php84
 ```
 
-### Accessing Your Projects
+### 🌐 Accessing Your Projects
 
 1. **Create project structure:**
    Place your PHP projects in `/home/php-devforge/public_html/` 
@@ -124,33 +130,33 @@ forge:logs:php84
    - `https://public--project--folder--p83.phpforge.dev` (forces PHP 8.3)
    - `https://public--project--folder--p84.phpforge.dev` (forces PHP 8.4)
 
-### Development Workflow
+### 🔄 Development Workflow
 
 - Edit code in your IDE (files are volume-mounted for live updates)
 - Changes appear immediately without restarting containers
 - Use Xdebug for debugging (configure your IDE for port 9000)
 - Access PHP containers via `forge:exec:php84` (or `forge:exec:php83` for PHP 8.3)
 
-## Supported PHP Extensions and Tools
+## 🛠️ Supported PHP Extensions and Tools
 
-### PHP Extensions
+### 📦 PHP Extensions
 - **Core Extensions**: GD, Intl, Zip, PDO MySQL, PDO PostgreSQL, SOAP, XSL, BC Math, OPcache, Mbstring, Exif, PCNTL
 - **PECL Extensions**: Imagick, Redis, APCu, Xdebug
 
-### Development Tools
+### 🔨 Development Tools
 - **Composer**: PHP dependency manager (pre-installed)
 - **Node.js 19**: Via NVM (Node Version Manager)
 - **Git**: Version control
 - **Xdebug**: PHP debugging extension
 - **Cron**: Task scheduling support
 
-### Container Features
+### 🐳 Container Features
 - **User Setup**: devuser with sudo privileges
 - **Volume Sharing**: Live code editing
 - **FPM Configuration**: Optimized for development
 - **Error Display**: PHP errors shown in development mode
 
-## Recommended Project Organization
+## 📁 Recommended Project Organization
 
 Create a dedicated folder inside public_html that will contain a symbolic link for each project.
 Each symbolic link should point to the project’s public folder (where index.php is located).
@@ -180,9 +186,9 @@ Plain PHP app → `plain-php--site.phpforge.dev`
 #### Example for a plain PHP project
 `ln -s /public_html/projects/plain-php ~/sites/plain-php`
 
-## Troubleshooting
+## 🐛 Troubleshooting
 
-### Common Issues
+### ❓ Common Issues
 
 - **DNS resolution not working**: Ensure you ran `./setup-local-dns.sh` and restarted your browser or system. You may need to flush DNS cache.
 - **SSL certificate not trusted**: Make sure you ran `./install_cert.sh` and the CA is installed in your system's trust store. Restart your browser after installing.
@@ -193,53 +199,53 @@ Plain PHP app → `plain-php--site.phpforge.dev`
 
 For more help, check the logs with `docker-compose logs` or create an issue on GitHub.
 
-## Contributing
+## 🤝 Contributing
 
 We welcome contributions to improve PHP DevForge! Please follow these guidelines:
 
-### Development Setup
+### ⚙️ Development Setup
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/your-feature`
 3. Make your changes
 4. Test thoroughly with different PHP versions and configurations
 5. Update documentation if needed
 
-### Code Standards
+### 📏 Code Standards
 - Follow Docker best practices
 - Use clear, descriptive commit messages
 - Test configurations on multiple platforms (Linux, macOS)
 - Ensure backward compatibility
 
-### Testing
+### 🧪 Testing
 - Test SSL certificate generation
 - Verify DNS resolution works
 - Check PHP version switching
 - Validate volume mounting and live editing
 - Test with different project structures
 
-### Documentation
+### 📚 Documentation
 - Update README for new features
 - Document configuration options
 - Provide examples for common use cases
 - Keep installation instructions current
 
-### Submitting Changes
+### 📤 Submitting Changes
 1. Ensure all tests pass
 2. Update CHANGELOG.md if applicable
 3. Submit a pull request with detailed description
 4. Address review feedback promptly
 
-### Reporting Issues
+### 🐛 Reporting Issues
 - Use GitHub issues for bug reports
 - Include your OS, Docker version, and PHP version
 - Provide steps to reproduce
 - Attach relevant logs and configuration files
 
-## License
+## 📄 License
 
-[Add your license information here]
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Support
+## 💬 Support
 
 For questions or issues:
 - Check the troubleshooting section in documentation

@@ -36,19 +36,19 @@ RUN a2enmod http2 rewrite headers ssl actions proxy_fcgi alias proxy_http proxy_
     && a2ensite devlocal_https 
 
 
-# Crear usuario de desarrollo devuser
-RUN useradd -m -d /home/devuser -s /bin/bash devuser \
-    && sed -i -e "s/umask 022/umask 002/g" /home/devuser/.bashrc
+# Crear usuario de desarrollo php-devforge
+RUN useradd -m -d /home/php-devforge -s /bin/bash php-devforge \
+    && sed -i -e "s/umask 022/umask 002/g" /home/php-devforge/.bashrc
 
-# Ajustar permisos de Apache para devuser
-RUN chown -R devuser:www-data /var/www/ /home/devuser \
-    && chmod -R 775 /var/www/ /home/devuser
+# Ajustar permisos de Apache para php-devforge
+RUN chown -R php-devforge:www-data /var/www/ /home/php-devforge \
+    && chmod -R 775 /var/www/ /home/php-devforge
 
 
 RUN chown root:www-data /etc/apache2/sites-available/*.conf \
     && chmod 664 /etc/apache2/sites-available/*.conf
 
-WORKDIR /home/devuser
+WORKDIR /home/php-devforge
 
 EXPOSE 80 443
 

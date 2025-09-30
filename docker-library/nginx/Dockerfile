@@ -8,15 +8,15 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends bash gettext && \
     rm -rf /var/lib/apt/lists/*
 
-# Crear usuario de desarrollo devuser
+# Crear usuario de desarrollo php-devforge
 # Nota: Debian generalmente usa 'www-data' o 'nginx' como grupo del servidor web.
-RUN useradd -m -d /home/devuser -s /bin/bash devuser \
-    && sed -i -e "s/umask 022/umask 002/g" /home/devuser/.bashrc
+RUN useradd -m -d /home/php-devforge -s /bin/bash php-devforge \
+    && sed -i -e "s/umask 022/umask 002/g" /home/php-devforge/.bashrc
 
 # Ajustar permisos 
 # Usamos 'www-data' ya que es el grupo común de Nginx/OpenResty en Debian.
-RUN chown -R devuser:www-data /home/devuser \
-    && chmod -R 775 /home/devuser
+RUN chown -R php-devforge:www-data /home/php-devforge \
+    && chmod -R 775 /home/php-devforge
 
 # 1. Crear el directorio Lua (si no existe) y el directorio de snippets
 RUN mkdir -p /etc/nginx/lua /etc/nginx/snippets
@@ -42,4 +42,4 @@ CMD ["/bin/bash", "-c", " \
     \
     # Inicia OpenResty
     openresty -g 'daemon off;' \
-"]
+    "]

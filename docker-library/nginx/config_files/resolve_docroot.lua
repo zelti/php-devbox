@@ -5,7 +5,7 @@
 local host = ngx.var.host
 
 -- Variable default para el docroot
-local docroot = "/home/devuser/public_html"
+local docroot = "/home/php-devforge/public_html"
 
 -- Obtenemos el dominio base desde la variable de entorno
 local dev_domain = ngx.var.dev_domain
@@ -32,7 +32,7 @@ if host and dev_domain and dev_domain ~= "" then
         final_path = final_path:gsub("([.])", "/")
         
         -- 3. Construir el docroot final
-        docroot = "/home/devuser/public_html/" .. final_path
+        docroot = "/home/php-devforge/public_html/" .. final_path
     end
 end
 

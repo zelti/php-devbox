@@ -34,7 +34,7 @@ usage() {
 	EXAMPLES
 	xdebug                    # Auto enable or disable 
 	xdebug --force-activate   # Force enable
-	xdebug /dir/test.php      # Runs : XDEBUG_CONFIG="idekey=PHPSTORM" php "/dir/test.php"
+	xdebug /dir/test.php      # Runs : XDEBUG_CONFIG="idekey=${XDEBUG_IDKEY}" php "/dir/test.php"
 
 	EOF
 }
@@ -46,7 +46,7 @@ set_xdebug_ini() {
   local UNAME
   UNAME=$(uname -a)
 
-  export XDEBUG_CONFIG="idekey=PHPSTORM"
+  export XDEBUG_CONFIG="idekey=${XDEBUG_IDKEY}"
 
   if [[ $UNAME =~ "boot2docker" ]]; then
     export PHP_IDE_CONFIG="serverName=localdev"
@@ -61,6 +61,7 @@ set_xdebug_ini() {
   fi
 
   sudo sed -e "s/IPGATEWAY/$IPGATEWAY/" -i "$PHP_ETC_XDEBUG"
+  sudo sed -e "s/IDKEY/$XDEBUG_IDKEY/" -i "$PHP_ETC_XDEBUG"
 }
 
 enable_xdebug() {

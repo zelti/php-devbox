@@ -4,7 +4,7 @@ A ready-to-use PHP development environment powered by Docker containers that pro
 
 ## Description
 
-PHP DevFoge is a comprehensive Docker-based development environment designed to streamline PHP development. It features:
+PHP DevForge is a comprehensive Docker-based development environment designed to streamline PHP development. It features:
 
 - **Automatic Domain Generation**: Create local domains without manual configuration
 - **Local SSL Certificates**: Auto-generated certificates with mkcert for secure HTTPS development
@@ -26,8 +26,8 @@ The environment automatically generates URLs based on your project folder struct
 
 1. **Clone the repository:**
    ```bash
-   git clone git@github.com:zelti/php-devforge.git
-   cd php-devforge
+   git clone git@github.com:zelti/php-devforge.git $HOME/php-devforge-config
+   cd $HOME/php-devforge-config
    ```
     It’s recommended to clone the project inside your home directory.
     This ensures the provided bash alias will work correctly.
@@ -53,10 +53,20 @@ The environment automatically generates URLs based on your project folder struct
    ```
    This configures your system to resolve `*.phpforge.dev` domains to `127.0.0.1`.
 
-5. **Start the containers:**
-   ```bash
-   docker-compose up -d
-   ```
+5. **Source the aliases (optional but recommended):**
+    ```bash
+    source aliases.bash
+    ```
+    Or add the following to your `~/.bashrc` for permanent availability:
+    ```bash
+    source $HOME/php-devforge-config/aliases.bash
+    ```
+
+6. **Start the containers:**
+    ```bash
+    docker-compose up -d
+    ```
+    (If you sourced the aliases, you can use `forge:start` instead)
 
 ## Usage
 
@@ -64,26 +74,43 @@ The environment automatically generates URLs based on your project folder struct
 
 ```bash
 # Start all services
-docker-compose up -d
+forge:start
 
 # Stop all services
-docker-compose down
+forge:stop
 
-# View logs
-docker-compose logs -f
+# Reload services
+forge:reload
 
-# Access containers
-docker-compose exec apachedev bash
-docker-compose exec php84dev bash
+# Check current PHP version
+forge:current
+
+# Switch to PHP 8.3
+forge:use:php83
+
+# Switch to PHP 8.4
+forge:use:php84
+
+# Access PHP 8.3 container
+forge:exec:php83
+
+# Access PHP 8.4 container
+forge:exec:php84
+
+# View PHP 8.3 logs
+forge:logs:php83
+
+# View PHP 8.4 logs
+forge:logs:php84
 ```
 
 ### Accessing Your Projects
 
 1. **Create project structure:**
-   Place your PHP projects in `/home/devuser/public_html/` 
+   Place your PHP projects in `/home/php-devforge/public_html/` 
    it will create this folder on your local you will need to change the folder user and group manually for first time
    ```
-    sudo chown yourUser:www-data -R /home/devuser
+    sudo chown yourUser:www-data -R /home/php-devforge
     ```
 
 2. **URL Structure:**
@@ -102,7 +129,7 @@ docker-compose exec php84dev bash
 - Edit code in your IDE (files are volume-mounted for live updates)
 - Changes appear immediately without restarting containers
 - Use Xdebug for debugging (configure your IDE for port 9000)
-- Access PHP containers via `docker-compose exec php84dev bash`
+- Access PHP containers via `forge:exec:php84` (or `forge:exec:php83` for PHP 8.3)
 
 ## Supported PHP Extensions and Tools
 
@@ -125,40 +152,46 @@ docker-compose exec php84dev bash
 
 ## Recommended Project Organization
 
-Recommended Project Organization
-
 Create a dedicated folder inside public_html that will contain a symbolic link for each project.
 Each symbolic link should point to the project’s public folder (where index.php is located).
 
+```
 ~/sites/
 ├── laravel-app   → symbolic link to Laravel’s /public folder
 ├── symfony-app   → symbolic link to Symfony’s /public folder
-└── plain-php     → symbolic link to the folder containing index.php
-
+└── plain-php     → symbolic link to the folder containing 
+```
 
 This setup keeps your project URLs clean. For example:
 
-Laravel app → laravel-app--site.phpforge.dev
+Laravel app → `laravel-app--site.phpforge.dev`
 
-Symfony app → symfony-app--site.phpforge.dev
+Symfony app → `symfony-app--site.phpforge.dev`
 
-Plain PHP app → plain-php--site.phpforge.dev
+Plain PHP app → `plain-php--site.phpforge.dev`
 
 ### Example: Creating a symbolic link
 #### Example for a Laravel project
-´´´
-ln -s /public_html/projects/laravel-app/public ~/sites/laravel-app
-´´´
+`ln -s /public_html/projects/laravel-app/public ~/sites/laravel-app`
 
 #### Example for a Symfony project
-´´´
-ln -s /public_html/projects/symfony-app/public ~/sites/symfony-app
-´´´
+`ln -s /public_html/projects/symfony-app/public ~/sites/symfony-app`
 
 #### Example for a plain PHP project
-´´´
-ln -s /public_html/projects/plain-php ~/sites/plain-php
-´´´
+`ln -s /public_html/projects/plain-php ~/sites/plain-php`
+
+## Troubleshooting
+
+### Common Issues
+
+- **DNS resolution not working**: Ensure you ran `./setup-local-dns.sh` and restarted your browser or system. You may need to flush DNS cache.
+- **SSL certificate not trusted**: Make sure you ran `./install_cert.sh` and the CA is installed in your system's trust store. Restart your browser after installing.
+- **Containers not starting**: Check that Docker and Docker Compose are installed and running. Ensure ports 80 and 443 are not in use by other services.
+- **Permission issues with public_html**: Run `sudo chown yourUser:www-data -R /home/php-devforge` to set correct ownership.
+- **PHP version not switching**: Use the aliases `forge:use:php83` or `forge:use:php84` to change the default version, or append `--p83`/`--p84` to the URL.
+- **Aliases not working**: Ensure you sourced `aliases.bash` or added it to your `~/.bashrc`.
+
+For more help, check the logs with `docker-compose logs` or create an issue on GitHub.
 
 ## Contributing
 

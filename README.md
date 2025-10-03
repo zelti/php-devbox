@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/PHP-DevForge-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP DevForge">
+  <img src="./logo.png" alt="PHP DevForge" width="300px" height="300px">
 </p>
 
 # PHP DevForge
